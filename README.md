@@ -1,6 +1,6 @@
 <h1>Steem Messenger (Beta)</h1>
 
-> Disclaimer: Steem Messenger is currently in Beta. While careful development and testing has been done - bugs should be expected. 
+> Disclaimer: Steem Messenger is currently in Beta. While careful development and testing have been done - bugs should be expected. 
 <a href="https://steemit.com/@therealwolf">@therealwolf on Steem</a> with funding from <a href="https://smartsteem.com">smartsteem.com</a> cannot be held liable for unknown issues, loss of funds (SBD & STEEM) or mistakes made by the user.
 
 ![Messenger_1.png](https://steemitimages.com/DQmQ6NPUPXeqtpjp6jQ3U38RBY1Eywn3hkyk8S8znTz8Ufs/Messenger_1.png)
