@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import userHeader from '../Chat/user_header'
-import chatHistory from '../Chat/chat_history'
-import textEntry from '../Chat/text_entry'
+import userHeader from '../chat/user_header'
+import chatHistory from '../chat/chat_history'
+import textEntry from '../chat/text_entry'
 
 export default {
   components: {
