@@ -1,8 +1,8 @@
 {
   "name": "steem-chat-wallet",
-  "version": "0.1.2",
+  "version": "0.1.1",
   "author": "therealwolf",
-  "description": "Light Wallet with a chat-interface for Steem",
+  "description": "Light Wallet with a Chat-Interface for Steem",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
