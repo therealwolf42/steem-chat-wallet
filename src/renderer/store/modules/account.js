@@ -152,7 +152,7 @@ const actions = {
     }
 
     await commit('setTransfers', { transfers, updating: false })
-    //await dispatch('updateTransfers', { first })
+    await dispatch('updateTransfers', { first })
     commit('updateSelectedUser', state.selected_user)
     commit('removeNotification', { main_user: state.selected_user.main_user })
     commit('setBadge')
@@ -312,7 +312,7 @@ const actions = {
             && state.blacklist.indexOf(data.from) === -1
             && state.smartsteem_blacklist.indexOf(data.from) === -1) {
             notif_count += 1
-            console.log(state.settings.enabled_alert, amount_arr[0] >= state.settings.min_alert)
+            //console.log(state.settings.enabled_alert, amount_arr[0] >= state.settings.min_alert)
             if(state.settings.enabled_alert && amount_arr[0] >= state.settings.min_alert) {
               notifier.notify({
                 title: `${data.amount} Message from ${data.from}`,
