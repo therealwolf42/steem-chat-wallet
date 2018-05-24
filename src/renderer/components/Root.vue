@@ -10,7 +10,7 @@
       <div v-if="!loading" class="Wrapper__Main">
         <div class="Wrapper__Left">
           <search v-if="Username" class="Root__Search"/>
-          <users class="Root__Users"/>
+          <users  v-if="Username" class="Root__Users"/>
           <Unlock v-if="clickedUnlock && Username" class="Root__Unlock"/>
           <account v-if="Username" class="Root__Account"/>
         </div>
@@ -95,7 +95,7 @@ body { font-family: 'Source Sans Pro', sans-serif; }
 
 .Root__Unlock {
   position:absolute;
-  bottom:75px;
+  bottom:120px;
   left:20px;
 }
 
@@ -138,7 +138,7 @@ body { font-family: 'Source Sans Pro', sans-serif; }
   bottom: 0;
   z-index: 1;
   overflow-y: scroll;
-  height:calc(100vh - 130px);
+  height:calc(100vh - 170px);
   width: 200px;
   background-color: white;
   margin-top:55px;
@@ -148,7 +148,7 @@ body { font-family: 'Source Sans Pro', sans-serif; }
   position: absolute;
   overflow-y: hidden;
   bottom:0;
-  height:50px;
+  min-height:75px;
   z-index:11000;
 }
 
@@ -174,11 +174,14 @@ body { font-family: 'Source Sans Pro', sans-serif; }
     background-color: rgba(221, 221, 221, 0.92)
 }
 
-.scrollbar__main::-webkit-scrollbar-track, .Root__Users::-webkit-scrollbar-track, .ChatHistory__Main::-webkit-scrollbar-track,
+.scrollbar__main::-webkit-scrollbar-track, .ChatHistory__Main::-webkit-scrollbar-track,
 .Textarea textarea::-webkit-scrollbar-track,  .Blacklist__Container::-webkit-scrollbar-track {
     background-color: white;
 }
 ​
+.scrollbar__main::-webkit-scrollbar-track, .Root__Users::-webkit-scrollbar-track {
+    background-color: rgba(250, 250, 250, 1);
+}
 
 .Wrapper__Top {
   position: absolute;

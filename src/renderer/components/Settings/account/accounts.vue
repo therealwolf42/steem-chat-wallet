@@ -42,6 +42,7 @@ export default {
       this.$store.commit('resetUser')
       this.$store.commit('setUserName', name)
       let result = await this.$store.dispatch('changeUser', { name })
+      this.$store.dispatch('getSteemAccount', name)
       this.$Message.success(`Changed Account to ${name}`)
     },
     remove(name) {

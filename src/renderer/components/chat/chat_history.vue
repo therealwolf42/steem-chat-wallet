@@ -1,6 +1,6 @@
 <template>
   <div class="ChatHistory__Main" id="ChatHistory__Main" v-if="selectedUser">
-    <div class="Message" v-for="transfer in selectedUser.transfers" :key="transfer.number">
+    <div class="Message" v-for="transfer in selectedUser.transfers" :key="transfer.number" v-if="transfer.amount >= settings.min_visible">
       <div class="Message__Top">
         <div class="Message__From Message__Part">{{ transfer.from }}</div>
         <div class="Message__Time Message__Part">{{ transfer.time | fromNow }}</div>
@@ -22,7 +22,8 @@ export default {
       'currentAccount',
       'memo_key_decrypted',
       'users',
-      'selectedUser'
+      'selectedUser',
+      'settings'
     ])
   },
   filters: {

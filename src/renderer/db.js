@@ -26,13 +26,18 @@ db.defaults({
     decrypt: true,
     default_amount: 0.001,
     interval: 10,
-    timeout: 60
+    timeout: 60,
+    using_messenger: true,
+    min_visible:0.001,
+    min_alert: 0.002,
+    enabled_alert: false,
+    show_public: false
   },
   agreedTerms:false,
   blacklist: [],
   smartsteem_blacklist: [],
   current_node: 'https://rpc.buildteam.io',
-  version: '0.1.0'
+  version: '0.1.1'
 }).write()
 
 //db.get('transfers').reverse('time').value()

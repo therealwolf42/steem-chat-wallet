@@ -18,6 +18,7 @@ import * as electron from 'electron'
       let username = this.$db.get('username').value()
       if(username) {
         this.$store.commit('setUserName', username)
+        this.$store.dispatch('getSteemAccount', username)
         await this.$store.dispatch('initializeUser', {  first: false})
       }
       this.$store.commit('setLoading', false)

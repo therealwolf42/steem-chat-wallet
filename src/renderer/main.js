@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import * as axios from 'axios'
 import VTooltip from 'v-tooltip'
+import * as notifier from 'node-notifier'
 
 import Message from './components/_message'
 import Checkbox from './components/_checkbox/checkbox'
@@ -28,6 +29,7 @@ Vue.config.productionTip = false
 
 Vue.prototype.$db = db
 Vue.prototype.$db_user = db_user
+Vue.prototype.$notifier = notifier
 
 Vue.directive('autoresize', {
   inserted: function (el) {

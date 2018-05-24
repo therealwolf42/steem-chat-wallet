@@ -29,7 +29,7 @@
     </div>
 
     <div v-if="action === 'add' || (!Username && Accounts.length <= 0)">
-      <p style="margin-bottom:5px;">You are able to add multiple accounts to Steem Messenger.</p>
+      <p style="margin-bottom:5px;">You are able to add multiple accounts to Steem Chat-Wallet.</p>
       <p style="margin-bottom:10px;">For each account you can either enter your private active & memo-key directly or derive the keys from your password.</p>
       <p v-if="change_keys" style="margin-bottom:10px;">Important for "Change Keys": Your keys will be overwritten - even if you leave a field empty.</p>
       <div class="ImportMethods__Container">
@@ -238,7 +238,9 @@ export default {
     setKey(key, key_type) {
       this.$store.commit('setKeyDecrypted', { key_type, key })
       this.$store.commit('setUnlocked', true)
-      key = CryptoJS.AES.encrypt(key, this.encryption_password).toString()
+      let params = { keySize: 512/32, iterations: 100000 }
+      let encrypted_password = CryptoJS.PBKDF2(this.encryption_password, 'salt', params).toString()
+      key = CryptoJS.AES.encrypt(key, encrypted_password).toString()
       this.$store.commit('setKey', { key_type, key })
     },
     chooseImport(key) {

@@ -53,8 +53,10 @@ export default {
     },
     decrypt(key_type, key) {
       try {
-        key = CryptoJS.AES.decrypt(key, this.encryption_password)
-        key = key.toString(CryptoJS.enc.Utf8)
+        let params = { keySize: 512/32, iterations: 100000 }
+        let encrypted_password = CryptoJS.PBKDF2(this.encryption_password, 'salt', params).toString()
+        key = CryptoJS.AES.decrypt(key, encrypted_password)
+        if(key) key = key.toString(CryptoJS.enc.Utf8)
         if(!key) {
           this.$Message.error('Wrong Password')
           return false

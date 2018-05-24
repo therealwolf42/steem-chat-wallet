@@ -2,8 +2,8 @@
   <div style="z-index:11000;">
   <div class="Intro__Main">
     <img class="Intro__Logo" src="../../assets/logo.png">
-    <h2 style="font-size:1.3rem;">Steem Messenger Beta v1.0</h2>
-    <div style="font-size:1.1rem;">Messenger for the Steem Blockchain</div>
+    <h2 style="font-size:1.3rem;">Steem Chat-Wallet Beta v1.1</h2>
+    <div style="font-size:1.1rem;">Light Wallet with a Chat-Interface for the Steem Blockchain</div>
     <div style="margin-top:10px;font-size:1rem;">Developed by <a @click="open('http://steemit.com/@therealwolf')">@therealwolf</a> with funding from <a @click="open('https://smartsteem.com')">smartsteem.com</a></div>
 
     <h2 style="margin-top:15px;" v-if="loading">Loading ...</h2>
@@ -11,10 +11,10 @@
     <modal v-if="showModal" @clicked="start" @close="show(false)">
       <h3 slot="header">Important: User Agreement </h3>
       <div slot="body">
-        <p>Please read carefully through these paragraphs. By using Steem Messenger, you agree to have read, understood and accepted the following terms.</p>
+        <p>Please read carefully through these paragraphs. By using Steem Chat-Wallet, you agree to have read, understood and accepted the following terms.</p>
         <div class="divider"></div>
-        <p class="modal__sentence"> - Steem Messenger is currently in Beta. While careful development and testing has been done, @therealwolf or smartsteem.com cannot be held liable for unknown issues, loss of funds (SBD & STEEM) or mistakes made by the user.</p>
-        <p class="modal__sentence"> - All messenges send through Steem Messenger are publicy available on the Steem blockchain - either in encrypted or un-encrypted format.</p>
+        <p class="modal__sentence"> - Steem Chat-Wallet is currently in Beta. While careful development and testing has been done, @therealwolf or smartsteem.com cannot be held liable for unknown issues, loss of funds (SBD & STEEM) or mistakes made by the user.</p>
+        <p class="modal__sentence"> - All messenges send through Steem Chat-Wallet are publicy available on the Steem blockchain - either in encrypted or un-encrypted format.</p>
       </div>
     </modal>
   </div>

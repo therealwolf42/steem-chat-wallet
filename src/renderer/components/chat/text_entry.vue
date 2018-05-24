@@ -38,7 +38,8 @@ export default {
       'users',
       'selectedUser',
       'settings',
-      'Unlocked'
+      'Unlocked',
+      'Username'
     ])
   },
   data() {
@@ -97,8 +98,9 @@ export default {
         let result = await this.$store.dispatch('transfer', { amount: this.amount, asset: this.currency, memo })
         this.waiting = false
         if(result) {
-          this.amount = Number(this.settings.amount)
+          this.amount = Number(this.settings.default_amount)
           this.message = ''
+          this.$store.dispatch('getSteemAccount', this.Username)
           await this.$store.dispatch('updateTransfers', { first: false })
           this.$store.commit('updateSelectedUser', this.selectedUser)
         }
@@ -116,7 +118,7 @@ export default {
     }
   },
   created() {
-    this.amount = this.settings.amount
+    this.amount = this.settings.default_amount
     this.currency = this.settings.default_currency
     this.useEncrypt = this.settings.use_encrypt
   },

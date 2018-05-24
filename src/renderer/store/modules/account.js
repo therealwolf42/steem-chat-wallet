@@ -2,6 +2,7 @@ import Vue from 'vue'
 import * as _ from 'lodash'
 import { remote } from 'electron'
 import * as axios from 'axios'
+import * as notifier from 'node-notifier'
 
 import db from '../../db'
 import db_user from '../../db_user'
@@ -42,7 +43,12 @@ const state = {
     decrypt: true,
     default_amount: 0.001,
     interval: 10,
-    timeout: 60
+    timeout: 60,
+    using_messenger: true,
+    min_visible:0.001,
+    min_alert: 0.002,
+    enabled_alert: false,
+    show_public: true
   },
   account: {},
   transfers: [],
@@ -62,7 +68,9 @@ const state = {
   clicked_unlock: false,
   notifications: [],
   notifications_users: [], //main_user: STRING, count: INT
-  global_last_transfer: 0
+  global_last_transfer: 0,
+  balance_steem: 0,
+  balance_sbd: 0
 }
 
 const actions = {
@@ -144,7 +152,7 @@ const actions = {
     }
 
     await commit('setTransfers', { transfers, updating: false })
-    await dispatch('updateTransfers', { first })
+    //await dispatch('updateTransfers', { first })
     commit('updateSelectedUser', state.selected_user)
     commit('removeNotification', { main_user: state.selected_user.main_user })
     commit('setBadge')
@@ -190,8 +198,8 @@ const actions = {
     }
   },
   decodeAllTransfers: async ({ commit, state, dispatch }, memo) => {
-    console.log('decoding all transfers')
     let transfers = state.transfers
+    if( !state.selected_user || !transfers || !state.selected_user.transfers ) return
     if (!state.selected_user || state.selected_user.transfers.length <= 0) return
     commit('decodeAllTransfers', transfers)
     commit('setTransfersDB', state.transfers)
@@ -201,7 +209,7 @@ const actions = {
     //let memo_key = state.account.memo_key#
     try {
       if (!memo) return ''
-      if (!state.memo_key_decrypted) return memo
+      if (!state.memo_key_decrypted) return ''
       let decoded = memo.substring(0, 1) === '#' && memo.length > 80 && !memo.substring(0, 50).includes(' ') ? steem.memo.decode(state.memo_key_decrypted, memo) : ''
       return decoded
     } catch (e) {
@@ -213,13 +221,24 @@ const actions = {
     try {
       if (name.length < 3 && name.length > 0) { return false }
       let acc = await client(state.current_node).database.getAccounts([name])
-      return acc[0]
+      acc = acc[0]
+      if(acc && acc.name === state.username) commit('setBalances', { balance_steem: convert_float(acc.balance, 'STEEM'), balance_sbd: convert_float(acc.sbd_balance, 'SBD')  })
+      return acc
     } catch (error) {
       console.error('getSteemAccount', error)
       return {}
     }
   },
-
+  updateAccount: async ({ commit, state, dispatch }, { account, memo_key, json_metadata }) => {
+    try {
+      let active_key = dsteem.PrivateKey.from(state.active_key_decrypted)
+      await client(state.current_node).broadcast.updateAccount({ account, memo_key, json_metadata }, active_key)
+      return true
+    } catch (error) {
+      console.error('updateAccount', error)
+      return false
+    }
+  },
   updateTransfers: async ({ commit, state, getters, dispatch }, { first, retries = 0, whole_history = false }) => {
     try {
       if (!state.username) return []
@@ -229,7 +248,7 @@ const actions = {
       let last_transfer_num = state.last_transfer_num | 0
 
       let transactions = []
-      
+
       // Recursive transfer fetching not yet working
       /*if (whole_history && (last_transfer_num > 0 && last_transfer_num > 10000)) {
         let fetched_all = false
@@ -249,7 +268,7 @@ const actions = {
       } else {*/
       transactions = await client(state.current_node).database.call('get_account_history', [state.username, -1, first ? 10000 : 2000])
       //}
-
+        
       if (transactions.length <= 0) return state.transfers
 
       transactions = _.orderBy(transactions, [0], ['desc'])
@@ -279,6 +298,7 @@ const actions = {
           if (state.transfers.filter(x => x.number === trx[0]).length > 0) continue
 
           let amount_arr = data.amount.split(" ")
+          amount_arr[0] = Number(amount_arr[0])
 
           let time_value = moment.utc(trx[1].timestamp).valueOf()
           let main_user = data.from === state.username ? data.to : data.from
@@ -292,6 +312,16 @@ const actions = {
             && state.blacklist.indexOf(data.from) === -1
             && state.smartsteem_blacklist.indexOf(data.from) === -1) {
             notif_count += 1
+            console.log(state.settings.enabled_alert, amount_arr[0] >= state.settings.min_alert)
+            if(state.settings.enabled_alert && amount_arr[0] >= state.settings.min_alert) {
+              notifier.notify({
+                title: `${data.amount} Message from ${data.from}`,
+                message: decoded ? decoded : (data.memo ? data.memo : 'Empty Message'),
+                icon: path.join(__static, 'icon.png'), // Absolute path (doesn't work on balloons)
+                sound: false, // Only Notification Center or Windows Toasters
+                wait: true // Wait with callback, until user action is taken against notification
+              })
+            }
             commit('addNotification', { main_user: data.from })
           }
 
@@ -328,6 +358,7 @@ const actions = {
         Message.info(`Retrying to update transfers`)
         await dispatch('updateTransfers', { first, retries: retries })
       }
+      is_updating_transfers = false
     }
   }
 }
@@ -398,10 +429,20 @@ const getters = {
   },
   global_last_transfer: state => {
     return state.global_last_transfer
+  },
+  balanceSBD: state => {
+    return state.balance_sbd
+  },
+  balanceSTEEM: state => {
+    return state.balance_steem
   }
 }
 
 const mutations = {
+  setBalances: (state, { balance_sbd, balance_steem }) => {
+    Vue.set(state, 'balance_steem', balance_steem)
+    Vue.set(state, 'balance_sbd', balance_sbd)
+  },
   setVersion: (state, version) => {
     db.set('version', version).write()
   },
@@ -507,7 +548,7 @@ const mutations = {
     if (!state.memo_key_decrypted) return transfers
     for (let transfer of transfers) {
       try {
-        if (!transfer.memo) continue
+        if (!transfer.memo || transfer.decoded) continue
         let decoded = transfer.memo.substring(0, 1) === '#' && transfer.memo.length > 80 && !transfer.memo.substring(0, 50).includes(' ') ? steem.memo.decode(state.memo_key_decrypted, transfer.memo) : ''
         transfer.decoded = decoded
       } catch (e) {
@@ -568,9 +609,9 @@ const mutations = {
       hidelist.push(main_user)
       db_user(state.username).set('hidelist', hidelist).write()
       Vue.set(state, 'hidelist', hidelist)
-      if (state.users.length > 1) {
-        let users = state.users.filter(x => !state.hidelist.includes(x.main_user))
+      let users = state.users.filter(x => !state.hidelist.includes(x.main_user))
         Vue.set(state, 'users', users)
+      if (state.users.length > 1) {
         let new_selected_user = state.users[0].main_user === main_user ? state.users[1] : state.users[0]
         Vue.set(state, 'selected_user', new_selected_user)
       } else {
@@ -728,6 +769,10 @@ let filter_duplictes = (transfers) => {
       }
     }
   }
+}
+
+function convert_float(text, asset) {
+  return parseFloat(text.toString().replace(` ${asset}`, ``))
 }
 
 export default {

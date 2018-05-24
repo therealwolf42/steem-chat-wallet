@@ -23,9 +23,13 @@
 			<path fill="none" d="M3.254,6.572c0.008,0.072,0.048,0.123,0.082,0.187c0.036,0.07,0.06,0.137,0.12,0.187C3.47,6.957,3.47,6.978,3.484,6.988c0.048,0.034,0.108,0.018,0.162,0.035c0.057,0.019,0.1,0.066,0.164,0.066c0.004,0,0.01,0,0.015,0l2.934-0.074c0.317-0.007,0.568-0.271,0.56-0.589C7.311,6.113,7.055,5.865,6.744,5.865c-0.005,0-0.01,0-0.015,0L5.074,5.907c2.146-2.118,5.604-2.634,7.971-1.007c2.775,1.912,3.48,5.726,1.57,8.501c-1.912,2.781-5.729,3.486-8.507,1.572c-0.259-0.18-0.618-0.119-0.799,0.146c-0.18,0.262-0.114,0.621,0.148,0.801c1.254,0.863,2.687,1.279,4.106,1.279c2.313,0,4.591-1.1,6.001-3.146c2.268-3.297,1.432-7.829-1.867-10.101c-2.781-1.913-6.816-1.36-9.351,1.058L4.309,3.567C4.303,3.252,4.036,3.069,3.72,3.007C3.402,3.015,3.151,3.279,3.16,3.597l0.075,2.932C3.234,6.547,3.251,6.556,3.254,6.572z"></path>
 		</svg>
     </div>
-    <div style="display:flex;">
+    <div class="Account__Name__Container" style="display:flex;">
       <div v-if="Username" class="Username">@{{ Username }}</div>
-      <div class="newVersion" v-if="newVersion && !showSettings">Update Available</div>
+      <div class="newVersion" v-if="newVersion && !showSettings" @click="open('https://github.com/therealwolf42/steemmessenger/releases')">Update Available</div>
+    </div>
+    <div class="Account__Balance__Container">
+      <div>{{ balanceSTEEM | round }} STEEM</div>
+      <div>{{ balanceSBD | round }} SBD</div>
     </div>
   </div>
 </template>
@@ -34,6 +38,8 @@
 import { mapGetters, mapState } from 'vuex'
 import steem from 'steem'
 import * as _g from '../../_g'
+import { shell } from 'electron'
+import path from 'path'
 
 export default {
   components: {
@@ -46,7 +52,11 @@ export default {
       'Unlocked',
       'clickedUnlock',
       'newVersion',
-      'showSettings'
+      'showSettings',
+      'active_key_decrypted',
+      'settings',
+      'balanceSTEEM',
+      'balanceSBD'
     ]),
     ...mapState([
       'account',
@@ -57,12 +67,27 @@ export default {
     return {
       status: '',
       error: false,
-      clickedUpdate: false
+      clickedUpdate: false,
+      balance_steem: 0.000,
+      balance_sbd: 0.000
     }
   },
   created() {
+    this.balance_steem = this.balanceSTEEM
+    this.balance_sbd = this.balanceSBD
+  },
+  filters: {
+    round: function(number) {
+      var factor = Math.pow(10, 3);
+      var tempNumber = number * factor;
+      var roundedTempNumber = Math.round(tempNumber);
+      return roundedTempNumber / factor;
+      }
   },
   methods: {
+    open(link) {
+      shell.openExternal(link)
+    },
     unlock(status) {
       if(!this.Username) return
       if(status) { // locked
@@ -98,12 +123,7 @@ export default {
   margin-left: 5px;
   font-size:0.9rem;
   color:var(--main-color);
-}
-
-.Username {
-  color: #7b7b7b;
-  margin-top:-2px;
-  margin-left:5px;
+  cursor: pointer;
 }
 
 .Account__Container {
@@ -113,6 +133,21 @@ export default {
   margin:0 15px;
   margin-bottom:10px;
 }
+
+.Account__Name__Container, .Account__Balance__Container {
+  margin-top:3px;
+  margin-left:5px;
+  color: #7b7b7b;
+}
+
+.Account__Name__Container {
+  display:flex;
+}
+
+.Account__Balance__Container {
+  font-size:0.95rem;
+}
+
 .Account__Input {
   padding:5px 10px;
   width:100px;

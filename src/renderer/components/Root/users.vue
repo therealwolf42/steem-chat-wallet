@@ -1,7 +1,7 @@
 <template>
-  <div v-if="users && selectedUser">
+  <div v-if="users && selectedUser" >
     <div class="users__main" v-for="user in users" :key="user.main_user" @click="selectUser(user)" v-bind:class="{ selectedUser: selectedUser.main_user === user.main_user }">
-      <div  class="users__part users_name">{{ user.main_user }}</div>
+      <div class="users__part users_name">{{ user.main_user }}</div>
       <img class="users__badge" v-if="(notifications.filter(x => x.main_user === user.main_user)).length > 0" src="../../assets/badges/badge.png"><!-- :src="getImagePath(notifications.filter(x => x.main_user === user.main_user))"-->
       <svg @click="hide(user.main_user)" class="Button__Ignore" viewBox="0 0 20 20">
 				<path fill="none" d="M15.898,4.045c-0.271-0.272-0.713-0.272-0.986,0l-4.71,4.711L5.493,4.045c-0.272-0.272-0.714-0.272-0.986,0s-0.272,0.714,0,0.986l4.709,4.711l-4.71,4.711c-0.272,0.271-0.272,0.713,0,0.986c0.136,0.136,0.314,0.203,0.492,0.203c0.179,0,0.357-0.067,0.493-0.203l4.711-4.711l4.71,4.711c0.137,0.136,0.314,0.203,0.494,0.203c0.178,0,0.355-0.067,0.492-0.203c0.273-0.273,0.273-0.715,0-0.986l-4.711-4.711l4.711-4.711C16.172,4.759,16.172,4.317,15.898,4.045z"></path>

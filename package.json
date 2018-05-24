@@ -1,8 +1,8 @@
 {
-  "name": "steemmessenger",
-  "version": "0.1.0",
-  "author": "therealwolf42 <therealwolfynator@gmail.com>",
-  "description": "Messer for Steem",
+  "name": "steem-chat-wallet",
+  "version": "0.1.2",
+  "author": "therealwolf",
+  "description": "Light Wallet with a chat-interface for Steem",
   "license": "MIT",
   "main": "./dist/electron/main.js",
   "scripts": {
@@ -19,8 +19,8 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "Steem Messenger",
-    "appId": "com.steemmessenger",
+    "productName": "Steem Chat-Wallet",
+    "appId": "com.steem.chat-wallet",
     "directories": {
       "output": "build"
     },
@@ -59,6 +59,7 @@
     "lodash": "^4.17.5",
     "lowdb": "^1.0.0",
     "moment": "^2.22.0",
+    "node-notifier": "^5.2.1",
     "steem": "^0.7.1",
     "v-tooltip": "^2.0.0-rc.31",
     "vue": "^2.3.3",
